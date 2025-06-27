@@ -1,0 +1,13 @@
+{
+  "name": "devhub_app",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "scripts": {
+    "build" : "npm run build --prefix backend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
