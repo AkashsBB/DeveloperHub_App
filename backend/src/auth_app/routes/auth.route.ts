@@ -9,10 +9,7 @@ import { protectRoute } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
-
-
-
-// Regular auth routes
+//auth routes
 router.post("/signup", 
   async (req: Request, res: Response, next: NextFunction) => {
     try {

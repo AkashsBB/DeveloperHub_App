@@ -54,19 +54,6 @@ router.get(
 );
 
 router.get(
-  '/:communityId/project/:projectId/analytics',
-  protectRoute,
-  // authorizeRole([UserRole.ADMIN], [CommunityRole.OWNER, CommunityRole.ADMIN]),
-  validateRequest({
-    params: z.object({
-      communityId: z.string(),
-      projectId: z.string()
-    })
-  }),
-  projectController.getProjectAnalytics.bind(projectController)
-);
-
-router.get(
   '/:communityId/project/:projectId/members',
   protectRoute,
   validateRequest({

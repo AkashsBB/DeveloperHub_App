@@ -71,7 +71,6 @@ interface ProjectState {
   joinProject: (communityId: string, projectId: string) => Promise<boolean>;
   leaveProject: (communityId: string, projectId: string) => Promise<boolean>;
   fetchProjectMembers: (communityId: string, projectId: string, pageNumber?: number, pageSize?: number) => Promise<void>;
-  fetchProjectAnalytics: (communityId: string, projectId: string) => Promise<void>;
   clearError: () => void;
   clearCurrentProject: () => void;
   clearProjectMembers: () => void;
@@ -386,37 +385,6 @@ export const useProjectStore = create<ProjectState>((set, _get) => ({
         config: error.config,
       });
       let errorMessage = 'Failed to fetch project members';
-      if (error.response?.data?.error) {
-        errorMessage = Array.isArray(error.response.data.error)
-          ? error.response.data.error[0]?.message || errorMessage
-          : error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      set({ error: errorMessage });
-      toast.error(errorMessage);
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  fetchProjectAnalytics: async (communityId: string, projectId: string) => {
-    set({ loading: true, error: null });
-    try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.get<ProjectAnalytics>(`/api/community/${communityId}/project/${projectId}/analytics`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      set({ projectAnalytics: data });
-    } catch (error: any) {
-      console.error('Fetch Project Analytics Error:', {
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data,
-        config: error.config,
-      });
-      let errorMessage = 'Failed to fetch project analytics';
       if (error.response?.data?.error) {
         errorMessage = Array.isArray(error.response.data.error)
           ? error.response.data.error[0]?.message || errorMessage

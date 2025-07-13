@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const connectDB = async (): Promise<void> => {
   try {
-    // Prisma handles connection automatically, but we can test it
+    // prisma handles connection automatically, just testing
     await prisma.$connect();
     console.log("PostgreSQL connected successfully");
   } catch (error: unknown) {
