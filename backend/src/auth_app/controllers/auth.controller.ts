@@ -224,3 +224,156 @@ export const checkAuth = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
+
+
+// // Configure Passport for Google OAuth
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.GOOGLE_CLIENT_ID as string,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+//       callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
+//       passReqToCallback: true,
+//       scope: ['profile', 'email']
+//     },
+//     async (_req, _accessToken, _refreshToken, profile, done) => {
+//       try {
+
+//         if (!profile.emails?.[0]?.value) {
+//           console.error('No email provided by Google OAuth');
+//           return done(new Error("No email provided by Google"), undefined);
+//         }
+
+//         const email = profile.emails[0].value;
+        
+//         // Try to find existing user by email
+//         let user = await prisma.user.findUnique({
+//           where: { email },
+//         });
+
+//         if (!user) {
+//           // Create new user if not exists
+//           user = await prisma.user.create({
+//             data: {
+//               name: profile.displayName || email.split('@')[0],
+//               email,
+//               provider: AuthProvider.GOOGLE,
+//               role: UserRole.USER,
+//               profilePicture: profile.photos?.[0]?.value || null,
+//             },
+//           });
+//         } else if (user.provider !== AuthProvider.GOOGLE) {
+//           // User exists but with different provider
+//           const errorMsg = `Email already in use with ${user.provider} sign-in method`;
+//           return done(new Error(errorMsg), undefined);
+//         }
+
+//         return done(null, user);
+//       } catch (error) {
+//         console.error('Error in Google OAuth strategy:', error);
+//         return done(error, undefined);
+//       }
+//     }
+//   )
+// );
+
+// // Serialize user into the session
+// passport.serializeUser((user: any, done) => {
+//   done(null, user.id);
+// });
+
+// // Deserialize user from the session
+// passport.deserializeUser(async (id: string, done) => {
+//   try {
+//     const user = await prisma.user.findUnique({ where: { id } });
+//     if (!user) {
+//       return done(new Error('User not found'), undefined);
+//     }
+//     done(null, user);
+//   } catch (error) {
+//     done(error, undefined);
+//   }
+// });
+
+
+// --------------------- GOOGLE OAUTH ---------------------
+// export const googleAuth = (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const returnTo = req.query.returnTo || '/';
+//     const state = Buffer.from(JSON.stringify({ returnTo })).toString('base64');
+    
+    
+//     const options = {
+//       scope: ['profile', 'email'],
+//       state,
+//       session: false,
+//       prompt: 'select_account' as const,
+//       accessType: 'offline',
+//       includeGrantedScopes: true
+//     };
+    
+//     const authenticator = passport.authenticate('google', options);
+//     return authenticator(req, res, next);
+//   } catch (error) {
+//     console.error('Error in googleAuth:', error);
+//     const errorMessage = error instanceof Error ? error.message : 'Failed to initiate Google OAuth';
+//     res.redirect(`${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(errorMessage)}`);
+//   }
+// };
+
+// export const googleAuthCallback = [
+//   passport.authenticate('google', { 
+//     failureRedirect: `${process.env.FRONTEND_URL}/login`,
+//     session: false 
+//   }),
+//   async (req: Request, res: Response) => {
+//     try {
+//       if (!req.user) {
+//         throw new Error('Authentication failed: No user data');
+//       }
+
+//       const user = req.user as any;
+      
+//       // Generate JWT token
+//       const token = jwt.sign(
+//         { userId: user.id, role: user.role },
+//         process.env.JWT_SECRET as string,
+//         { expiresIn: '1h' }
+//       );
+
+//       // Set the JWT in a cookie
+//       res.cookie('jwt', token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === 'production',
+//         sameSite: "none",
+//         maxAge: 3600000, // 1 hour
+//         path: "/", // To Ensure cookie is accessible on all routes
+//       });
+
+//       // Parse state if it exists
+//       let returnTo = '/';
+//       if (req.query.state) {
+//         try {
+//           const state = JSON.parse(Buffer.from(req.query.state as string, 'base64').toString());
+//           if (state.returnTo) {
+//             returnTo = state.returnTo;
+//           }
+//         } catch (e) {
+//           console.error('Error parsing state:', e);
+//         }
+//       }
+      
+//       // Redirect to the frontend without token query param
+//       const redirectUrl = new URL(returnTo, process.env.FRONTEND_URL as string);
+//       console.log('Redirecting to:', redirectUrl.toString());
+//       return res.redirect(redirectUrl.toString());
+//     } catch (error) {
+//       console.error('Google OAuth callback error:', error);
+//       const frontendUrl = process.env.FRONTEND_URL as string;
+//       const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+//       return res.redirect(
+//         `${frontendUrl}/login?error=${encodeURIComponent(errorMessage)}`
+//       );
+//     }
+//   }
+// ];

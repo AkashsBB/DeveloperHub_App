@@ -10,7 +10,6 @@ import { connectDB } from './db';
 
 dotenv.config();
 
-
 const app = express();
 const httpServer = createServer(app);
 
